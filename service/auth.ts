@@ -4,7 +4,7 @@ import { doc, setDoc } from "firebase/firestore"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 
-export const registerUser = async (fullname: string, email: string, password: string) => {
+export const registerUser = async (fullname: string, email: string, password: string , role: "serviceProvider" | "user") => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
 
@@ -15,7 +15,7 @@ export const registerUser = async (fullname: string, email: string, password: st
     await setDoc(doc(db, "users", userCredential.user.uid), {
       uid: userCredential.user.uid,
       name: fullname,
-      role: "",
+      role: role,
       createAt : new Date()
     })
 
