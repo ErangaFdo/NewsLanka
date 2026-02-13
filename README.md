@@ -1,50 +1,54 @@
-# Welcome to your Expo app 👋
+# News Mobile Application
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A **mobile news application** that allows users to read, like, save, and search news articles while managing their personal profiles.  
+Built with **React Native** and **Firebase**.
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 Features
 
-   ```bash
-   npm install
-   ```
+### 👤 User Features
+- User Registration & Login (Email / Password Authentication)
+- View Latest News Articles
+- Read Full News Details
+- Like News Articles
+- Save / Bookmark News for Later
+- Search News by Title or Keywords
+- Edit User Profile (Name, Profile Picture)
 
-2. Start the app
+### ⚙️ Additional Features
+- Real-time Updates using Firebase
+- Responsive & Mobile-friendly UI
+- Secure Authentication
+- Cloud-based Data Storage
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🖼️ Screenshots
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+*(Add screenshots of your application here)*
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Home / News Feed  
+- News Details Screen  
+- Profile Screen  
+- Saved / Bookmarked News  
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 🛠️ Tech Stack
 
-```bash
-npm run reset-project
-```
+- **Frontend:** React Native  
+- **Backend:** Firebase  
+- **Database:** Firebase Firestore  
+- **Authentication:** Firebase Authentication  
+- **State Management:** React Hooks / Context API  
+- **Tools & Libraries:**
+  - Expo
+  - React Navigation
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🚀 Installation & Setup
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 1. Download APK
+https://expo.dev/accounts/chamindu_chirantha/projects/newlanka/builds/4cbd18c3-b8e6-45c8-b9f6-2a80afeb4457
