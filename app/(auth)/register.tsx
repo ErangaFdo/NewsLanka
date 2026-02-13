@@ -1,130 +1,243 @@
-import { registerUser } from "@/service/auth"; // ඔයාගේ Firebase service
-import { router } from "expo-router"
-import { useState } from "react"
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native"
-import RNPickerSelect from "react-native-picker-select"; // dropdown එකට
+import React, { useState } from "react";
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  KeyboardAvoidingView, 
+  Platform, 
+  ScrollView, 
+  StatusBar, 
+  Alert, 
+  useColorScheme,
+  Image
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { registerUser } from "@/service/auth";
+import { pickImage } from "@/service/imagePicker";
+import Toast from "react-native-toast-message";
 
-export default function Register() {
-  const [fullname, setFullname] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [role, setRole] = useState<"user" | "serviceProvider">("user")
-  const [loading, setLoading] = useState(false)
+export default function RegisterScreen() {
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const systemTheme = useColorScheme();
+  const [theme, setTheme] = useState(systemTheme || "light");
+
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  const isDark = theme === "dark";
+
+  const handlePickImage = async () => {
+    const base64 = await pickImage();
+    if (base64) {
+      setProfileImage(base64);
+    }
+  };
 
   const handleRegister = async () => {
-    if (!fullname || !email || !password || !confirmPassword) {
-      return Alert.alert("Error", "Please fill all fields")
+    if (!name || !email || !password || !confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Registration failed",
+        text2: "Please fill all the details",
+      });
+      return;
     }
 
     if (password !== confirmPassword) {
-      return Alert.alert("Error", "Passwords do not match")
+      Toast.show({
+        type: "error",
+        text1: "Password failed",
+        text2: "Please check your passwords match",
+      });
+      return;
     }
 
     try {
-      setLoading(true)
-      const user = await registerUser(fullname, email, password, role)
-      setLoading(false)
-      Alert.alert("Success", "Account created successfully")
-      router.push("/login")
-    } catch (error) {
-      setLoading(false)
-      Alert.alert("Error", (error as any).message || "Something went wrong")
+      await registerUser(name, email, password , profileImage || "");
+      console.log("Base64 length:", profileImage?.length);
+      Toast.show({
+        type: "success",
+        text1: "Account Created successful 🎉",
+        text2: "Please login to continue",
+      });
+      router.replace("/login");
+    } catch (e) {
+      console.error(e);
+      Toast.show({
+        type: "error",
+        text1: "Register failed",
+        text2: "Please try again",
+      });
     }
-  }
+  };
 
   return (
-    <View className="flex-1 bg-white px-6 justify-center">
-      {/* Title */}
-      <Text className="text-3xl font-bold text-center text-blue-600 mb-2">
-        Create Account
-      </Text>
-      <Text className="text-center text-gray-500 mb-8">
-        Join SewaLanka today
-      </Text>
+    <SafeAreaView className={`flex-1 ${isDark ? "bg-[#0f172a]" : "bg-white"}`}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
 
-      {/* Name */}
-      <TextInput
-        placeholder="Full Name"
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
-        value={fullname}
-        onChangeText={setFullname}
-      />
-
-      {/* Email */}
-      <TextInput
-        placeholder="Email"
-        keyboardType="email-address"
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      {/* Password */}
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      <TextInput
-        placeholder="Confirm Password"
-        secureTextEntry
-        className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
-
-      {/* Role Picker */}
-      <RNPickerSelect
-        onValueChange={(value) => setRole(value)}
-        value={role}
-        placeholder={{ label: "Select Role", value: null }}
-        style={{
-          inputIOS: {
-            borderWidth: 1,
-            borderColor: "#D1D5DB",
-            borderRadius: 12,
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            marginBottom: 24,
-          },
-          inputAndroid: {
-            borderWidth: 1,
-            borderColor: "#D1D5DB",
-            borderRadius: 12,
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            marginBottom: 24,
-          },
-        }}
-        items={[
-          { label: "User", value: "user" },
-          { label: "Service Provider", value: "serviceProvider" },
-        ]}
-        
-      />
-
-      {/* Register Button */}
-      <TouchableOpacity
-        className="bg-blue-600 py-4 rounded-xl"
-        onPress={handleRegister}
-        disabled={loading}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
       >
-        <Text className="text-white text-center font-semibold text-lg">
-          {loading ? "Registering..." : "Register"}
-        </Text>
-      </TouchableOpacity>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header Section */}
+          <View className="px-8 pt-12 pb-6">
+            <TouchableOpacity
+              onPress={() => setTheme(isDark ? "light" : "dark")}
+              className="absolute right-6 top-6"
+            >
+              <Ionicons
+                name={isDark ? "sunny-outline" : "moon-outline"}
+                size={24}
+                color={isDark ? "#f8fafc" : "#0f172a"}
+              />
+            </TouchableOpacity>
 
-      {/* Footer */}
-      <Text className="text-center text-gray-500 mt-6">
-        Already have an account?{" "}
-        <TouchableOpacity onPress={() => router.push("/login")}>
-          <Text className="text-blue-900 font-black text-base">Login</Text>
-        </TouchableOpacity>
-      </Text>
-    </View>
-  )
+            <View className="flex-row items-center mb-2">
+              <View className="bg-red-600 px-2 py-1 rounded">
+                <Text className="text-white font-bold text-xl tracking-tighter">NEWS</Text>
+              </View>
+              <Text className={`text-xl font-light ml-2 ${isDark ? "text-white" : "text-slate-900"}`}>
+                HUB
+              </Text>
+            </View>
+            
+            <Text className={`text-3xl font-bold mt-6 ${isDark ? "text-white" : "text-slate-900"}`}>
+              Join the Community
+            </Text>
+            <Text className="text-slate-500 text-lg mt-2">
+              Create an account to stay updated with the latest news.
+            </Text>
+          </View>
+
+          {/* Form Section */}
+          <View className="px-8 flex-1">
+            {/* Profile Image Picker */}
+            <View className="items-center mb-8">
+              <TouchableOpacity 
+                onPress={handlePickImage}
+                activeOpacity={0.9}
+                className={`w-24 h-24 rounded-full border-2 border-dashed items-center justify-center overflow-hidden ${
+                  isDark ? "border-slate-700 bg-slate-800" : "border-slate-300 bg-slate-50"
+                }`}
+              >
+                {profileImage ? (
+                  <Image
+                    source={{ uri: `data:image/jpeg;base64,${profileImage}` }}
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <View className="items-center">
+                    <Ionicons name="camera-outline" size={28} color="#dc2626" />
+                    <Text className="text-[10px] text-slate-400 mt-1 font-bold">UPLOAD</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              {profileImage && (
+                <TouchableOpacity onPress={handlePickImage} className="mt-2">
+                  <Text className="text-red-600 text-xs font-bold">Change Photo</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View className="space-y-4">
+              {/* Full Name */}
+              <View className="mb-4">
+                <Text className={`text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                  Full Name
+                </Text>
+                <TextInput
+                  placeholder="John Doe"
+                  value={name}
+                  onChangeText={setName}
+                  autoCapitalize="words"
+                  placeholderTextColor="#94a3b8"
+                  className={`rounded-xl border p-4 text-base ${
+                    isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                  }`}
+                />
+              </View>
+
+              {/* Email */}
+              <View className="mb-4">
+                <Text className={`text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                  Email Address
+                </Text>
+                <TextInput
+                  placeholder="name@example.com"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholderTextColor="#94a3b8"
+                  className={`rounded-xl border p-4 text-base ${
+                    isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                  }`}
+                />
+              </View>
+
+              {/* Password */}
+              <View className="mb-4">
+                <Text className={`text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                  Password
+                </Text>
+                <TextInput
+                  placeholder="Create a password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  placeholderTextColor="#94a3b8"
+                  className={`rounded-xl border p-4 text-base ${
+                    isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                  }`}
+                />
+              </View>
+
+              {/* Confirm Password */}
+              <View className="mb-8">
+                <Text className={`text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                  Confirm Password
+                </Text>
+                <TextInput
+                  placeholder="Repeat your password"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry
+                  placeholderTextColor="#94a3b8"
+                  className={`rounded-xl border p-4 text-base ${
+                    isDark ? "bg-slate-800 border-slate-700 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                  }`}
+                />
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={handleRegister}
+              activeOpacity={0.8}
+              className="bg-red-600 py-4 rounded-xl items-center shadow-sm"
+            >
+              <Text className="text-white font-bold text-lg">Create Account</Text>
+            </TouchableOpacity>
+
+            <View className="flex-row justify-center mt-10 pb-12">
+              <Text className="text-slate-500 text-base">Already have an account? </Text>
+              <TouchableOpacity onPress={() => router.push("/login")}>
+                <Text className="text-red-600 font-bold text-base">Sign In</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }
