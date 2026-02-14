@@ -1,4 +1,4 @@
-import { auth, db } from "@/service/firebase";
+import { auth, db } from "@/services/firbase";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {

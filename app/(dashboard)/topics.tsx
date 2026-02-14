@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const topic = () => {
+const topics = () => {
   return (
     <View>
-      <Text>topic</Text>
+      <Text>topics</Text>
     </View>
   )
 }
 
-export default topic
+export default topics
